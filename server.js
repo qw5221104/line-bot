@@ -1,5 +1,159 @@
 const express = require('express');
 const axios = require('axios');
+MJzXK+tcQD/WhPvTOXRPaR8bFF6WbUQOWhvXG5EtKANBjmx0jSO7rgTmkKImi6FT5+U8e9GSORML7kxJ3IQMxIqgMvdBAxhLtk3Uerl727D69wkK7zSETyTbXJmttbo03Ga+EAkTjwhyt+TJsLQ7+QdB04t89/1O/w1cDnyilFU=MJzXK+tcQD/WhPvTOXRPaR8bFF6WbUQOWhvXG5EtKANBjmx0jSO7rgTmkKImi6FT5+U8e9GSORML7kxJ3IQMxIqgMvdBAxhLtk3Uerl727D69wkK7zSETyTbXJmttbo03Ga+EAkTjwhyt+TJsLQ7+QdB04t89/1O/w1cDnyilFUMJzXK+tcQD/WhPvTOXRPaR8bFF6WbUQOWhvXG5EtKANBjmx0jSO7rgTmkKImi6FT5+U8e9GSORML7kxJ3IQMxIqgMvdBAxhLtk3Uerl727D69wkK7zSETyTbXJmttbo03Ga+EAkTjwhyt+TJsLQ7+QdB04t89/1O/w1cDnyilFU=MJzXK+tcQD/WhPvTOXRPaR8bFF6WbUQOWhvXG5EtKANBjmx0jSO7rgTmkKImi6FT5+U8e9GSORML7kxJ3IQMxIqgMvdBAxhLtk3Uerl727D69wkK7zSETyTbXJmttbo03Ga+EAkTjwhyt+TJsLQ7+QdB04t89/1Oconst express = require('express');
+const axios = require('axios');
+
+const app = express();
+app.use(express.json());
+
+const LINE_ACCESS_TOKEN = 'MJzXK+tcQD/WhPvTOXRPaR8bFF6WbUQOWhvXG5EtKANBjmx0jSO7rgTmkKImi6FT5+U8e9GSORML7kxJ3IQMxIqgMvdBAxhLtk3Uerl727D69wkK7zSETyTbXJmttbo03Ga+EAkTjwhyt+TJsLQ7+QdB04t89/1O/w1cDnyilFU='; // 這裡換成你的 LINE Token
+
+// 測試 `/` 路徑，確認伺服器是否正常運作
+app.get('/', (req, res) => {
+    res.send("✅ LINE Bot 伺服器已運行 🚀");
+});
+
+// 設置 Webhook 路徑
+app.post('/webhook', async (req, res) => {
+    console.log("📩 收到 LINE Webhook:", req.body);
+
+    if (!req.body.events) {
+        return res.status(400).send("Bad Request");
+    }
+
+    const events = req.body.events;
+
+    for (let event of events) {
+        if (event.type === 'message' && event.message.type === 'text') {
+            if (event.message.text === '我是生日壽星') {
+                const replyToken = event.replyToken;
+                await sendQuickReply(replyToken);
+            }
+        }
+    }
+
+    res.status(200).send({ status: 'ok' }); // 確保回傳 200 OK
+});
+
+// 回覆快速回覆按鈕
+async function sendQuickReply(replyToken) {
+    const message = {
+        replyToken: replyToken,
+        messages: [
+            {
+                type: 'text',
+                text: "🎉 生日快樂！請選擇以下選項",
+                quickReply: {
+                    items: [
+                        {
+                            type: "action",
+                            action: {
+                                type: "message",
+                                label: "🎂 領取生日優惠",
+                                text: "領取生日優惠"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    };
+
+    try {
+        const response = await axios.post('https://api.line.me/v2/bot/message/reply', message, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${LINE_ACCESS_TOKEN}`
+            }
+        });
+        console.log("✅ 回覆成功:", response.data);
+    } catch (error) {
+        console.error("❌ 回覆失敗:", error.response ? error.response.data : error.message);
+    }
+}
+
+// 設置伺服器運行的端口
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Webhook 伺服器運行中，監聽 ${PORT} 端口`);
+});
+const express = require('express');
+const axios = require('axios');
+
+const app = express();
+app.use(express.json());
+
+const LINE_ACCESS_TOKEN = 'MJzXK+tcQD/WhPvTOXRPaR8bFF6WbUQOWhvXG5EtKANBjmx0jSO7rgTmkKImi6FT5+U8e9GSORML7kxJ3IQMxIqgMvdBAxhLtk3Uerl727D69wkK7zSETyTbXJmttbo03Ga+EAkTjwhyt+TJsLQ7+QdB04t89/1O/w1cDnyilFU='; // 這裡換成你的 LINE Token
+
+// 測試 `/` 路徑，確認伺服器是否正常運作
+app.get('/', (req, res) => {
+    res.send("✅ LINE Bot 伺服器已運行 🚀");
+});
+
+// 設置 Webhook 路徑
+app.post('/webhook', async (req, res) => {
+    console.log("📩 收到 LINE Webhook:", req.body);
+
+    if (!req.body.events) {
+        return res.status(400).send("Bad Request");
+    }
+
+    const events = req.body.events;
+
+    for (let event of events) {
+        if (event.type === 'message' && event.message.type === 'text') {
+            if (event.message.text === '我是生日壽星') {
+                const replyToken = event.replyToken;
+                await sendQuickReply(replyToken);
+            }
+        }
+    }
+
+    res.status(200).send({ status: 'ok' }); // 確保回傳 200 OK
+});
+
+// 回覆快速回覆按鈕
+async function sendQuickReply(replyToken) {
+    const message = {
+        replyToken: replyToken,
+        messages: [
+            {
+                type: 'text',
+                text: "🎉 生日快樂！請選擇以下選項",
+                quickReply: {
+                    items: [
+                        {
+                            type: "action",
+                            action: {
+                                type: "message",
+                                label: "🎂 領取生日優惠",
+                                text: "領取生日優惠"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    };
+
+    try {
+        const response = await axios.post('https://api.line.me/v2/bot/message/reply', message, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${LINE_ACCESS_TOKEN}`
+            }
+        });
+        console.log("✅ 回覆成功:", response.data);
+    } catch (error) {
+        console.error("❌ 回覆失敗:", error.response ? error.response.data : error.message);
+    }
+}
+
+// 設置伺服器運行的端口
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Webhook 伺服器運行中，監聽 ${PORT} 端口`);
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
