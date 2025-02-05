@@ -1,0 +1,55 @@
+const express = require('express');
+const axios = require('axios');
+
+const app = express();
+app.use(express.json());
+
+const LINE_ACCESS_TOKEN = '你的_LINE_Channel_Access_Token'; // 這裡要填上你的 LINE Bot Token
+
+app.post('/webhook', async (req, res) => {
+    const events = req.body.events;
+
+    for (let event of events) {
+        if (event.type === 'message' && event.message.type === 'text') {
+            if (event.message.text === '我是生日壽星') {
+                const replyToken = event.replyToken;
+                await sendQuickReply(replyToken);
+            }
+        }
+    }
+    res.sendStatus(200);
+});
+
+async function sendQuickReply(replyToken) {
+    const message = {
+        type: "text",
+        text: "請選擇您的生日月份！",
+        quickReply: {
+            items: [
+                { type: "action", action: { type: "message", label: "一月", text: "一月" } },
+                { type: "action", action: { type: "message", label: "二月", text: "二月" } },
+                { type: "action", action: { type: "message", label: "三月", text: "三月" } },
+                { type: "action", action: { type: "message", label: "四月", text: "四月" } },
+                { type: "action", action: { type: "message", label: "五月", text: "五月" } },
+                { type: "action", action: { type: "message", label: "六月", text: "六月" } }
+            ]
+        }
+    };
+
+    await axios.post('https://api.line.me/v2/bot/message/reply', 
+        {
+            replyToken: replyToken,
+            messages: [message]
+        },
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${LINE_ACCESS_TOKEN}`
+            }
+        }
+    );
+}
+
+app.listen(3000, () => console.log('Webhook 伺服器運行中，監聽 3000 端口'));
+
+
